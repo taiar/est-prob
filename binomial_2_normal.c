@@ -52,11 +52,20 @@ double binomial(double n, double p, double r) {
   return selecao(n, r) * pow(p, r) * pow((1 - p), (n - r));
 }
 
+double aplica_binomial_intervalo(double n, double p, double m_0, double m_1) {
+  int i;
+  double acum = 0;
+  for(i = m_0; i <= m_1; i += 1)
+    acum += binomial(n, p, i);
+  return acum;
+}
+
 void aplica_binomial(double n, double p, double m_0, double m_1) {
-  double v_0, v_1;
-  v_0 = binomial(n, p, m_0);
-  v_1 = binomial(n, p, m_1);
-  printf("%lf - %lf\n", v_0, v_1);
+  printf(" ## Distribuição Binomial ## \n");
+  printf("Valores: \t\t%lf\n", n);
+  printf("Probabilidade: \t\t%lf\n", p);
+  printf("Intervalo: \t\t[%lf, %lf]\n", m_0, m_1);
+  printf("###### Valor calculado: %lf\n", aplica_binomial_intervalo(n, p, m_0, m_1));
 }
 
 void normal(double n, double p, double m_0, double m_1) {
