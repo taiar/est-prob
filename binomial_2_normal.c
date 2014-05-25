@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include <gmp.h>
 
 static const double valores[] = {
   0.0000, 0.0040, 0.0080, 0.0120, 0.0160, 0.0199, 0.0239, 0.0279, 0.0319, 0.0359, 0.0398, 0.0438,
