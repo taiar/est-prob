@@ -1,1 +1,6 @@
 prob
+
+doc/*.pdf
+doc/*.aux
+doc/*.log
+doc/*.out

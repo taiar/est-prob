@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <gmp.h>
 
 static const double valores[] = {
   0.0000, 0.0040, 0.0080, 0.0120, 0.0160, 0.0199, 0.0239, 0.0279, 0.0319, 0.0359, 0.0398, 0.0438,
@@ -78,7 +79,11 @@ static int max = 310;
 
 double phi(double n) {
   char valor[30];
-  int i, indice;
+  int i, indice = 0;
+
+  if(n < 0)
+    return 1 - phi((-1) * n);
+
   sprintf(valor, "%lf", n);
   for (i = 0; i < max; ++i)
     if(strcmp(valor, indices[i]) == 0) {
@@ -156,23 +161,29 @@ double aplica_binomial_intervalo(double n, double p, double m_0, double m_1) {
 
 void aplica_binomial(double n, double p, double m_0, double m_1) {
   printf(" ## Distribuicao Binomial ## \n");
-  printf("Valores: \t\t%lf\n", n);
-  printf("Probabilidade: \t\t%lf\n", p);
-  printf("Intervalo: \t\t[%lf, %lf]\n", m_0, m_1);
-  printf("###### Valor calculado: %lf\n", aplica_binomial_intervalo(n, p, m_0, m_1));
+  printf("Distribuição: \tX ~ B(%lf, %lf) \n", n, p);
+  printf("Intervalo: \t[%lf, %lf]\n", m_0, m_1);
+  printf("Probabilidade: \tP( %lf <= X <= %lf) = %lf\n", m_0, m_1, aplica_binomial_intervalo(n, p, m_0, m_1));
 }
 
-double normal(double n, double p, double m_0, double m_1) {
-  double z_0 = ((p - binomial_esperanca(n, p))/(sqrt(binomial_variancia(n, p))));
-  return phi(z_0);
+double normal_padrao_intervalo(double m_0, double m_1) {
+  double p_0 = phi(m_0);
+  double p_1 = phi(m_1);
+  return (p_1 > p_0) ? (p_1 - p_0) : (p_0 - p_1);
 }
 
 void aplica_normal(double n, double p, double m_0, double m_1) {
+  double b_esp = binomial_esperanca(n, p);
+  double b_var = binomial_variancia(n, p);
+  double b_des = sqrt(b_var);
+  double n_0   = (m_0 - b_esp)/b_des;
+  double n_1   = (m_1 - b_esp)/b_des;
+
   printf(" ## Distribuicao Normal ## \n");
-  printf("Valores: \t\t%lf\n", n);
-  printf("Probabilidade: \t\t%lf\n", p);
-  printf("Intervalo: \t\t[%lf, %lf]\n", m_0, m_1);
-  printf("###### Valor calculado: %lf\n", normal(n, p, m_0, m_1));
+  printf("Binomial: \tX ~ B(%lf, %lf)\n", n, p);
+  printf("Normal: \tZ ~ N(%lf, %lf)\n", b_esp, b_var);
+  printf("Probabilidade: \tP( %lf <= X <= %lf)  ~ P(%lf <= Z <= %lf) = %lf\n", m_0, m_1,
+    n_0, n_1, normal_padrao_intervalo(n_0, n_1));
 }
 
 int main(int argc, char **argv) {
@@ -186,8 +197,6 @@ int main(int argc, char **argv) {
     aplica_binomial(n, p, m_0, m_1);
   else if(algoritmo == 2)
     aplica_normal(n, p, m_0, m_1);
-
-  printf("TestamdpPPPPPPPPPPPOOOOOOOOOO: %lf\n", phi(1.36));
 
   return EXIT_SUCCESS;
 }
